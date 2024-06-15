@@ -1,10 +1,8 @@
 package handler
 
 import (
-	"github.com/pikachu0310/go-backend-template/internal/repository"
-	"github.com/pikachu0310/go-backend-template/openapi/models"
-
-	"github.com/labstack/echo/v4"
+	"github.com/pikachu0310/hackathon24spring02-data-server/internal/repository"
+	"github.com/pikachu0310/hackathon24spring02-data-server/openapi/models"
 )
 
 type Handler struct {

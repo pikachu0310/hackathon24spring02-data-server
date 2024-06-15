@@ -2,14 +2,13 @@ package handler
 
 import (
 	"fmt"
-	"github.com/pikachu0310/go-backend-template/internal/repository"
-	"github.com/pikachu0310/go-backend-template/openapi/models"
+	"github.com/pikachu0310/hackathon24spring02-data-server/internal/repository"
+	"github.com/pikachu0310/hackathon24spring02-data-server/openapi/models"
 	"net/http"
 
 	vd "github.com/go-ozzo/ozzo-validation"
 	"github.com/go-ozzo/ozzo-validation/is"
 	"github.com/google/uuid"
-	"github.com/labstack/echo/v4"
 )
 
 // スキーマ定義

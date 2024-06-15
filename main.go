@@ -3,8 +3,10 @@ package main
 import (
 	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/jmoiron/sqlx"
+	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	oapimiddleware "github.com/oapi-codegen/echo-middleware"
+	gpt "github.com/pikachu0310/hackathon24spring02-data-server/internal/api"
 	"github.com/pikachu0310/hackathon24spring02-data-server/internal/handler"
 	"github.com/pikachu0310/hackathon24spring02-data-server/internal/migration"
 	"github.com/pikachu0310/hackathon24spring02-data-server/internal/pkg/config"
@@ -13,6 +15,8 @@ import (
 )
 
 func main() {
+	gpt.InitGPT()
+
 	e := echo.New()
 
 	swagger, err := openapi.GetSwagger()

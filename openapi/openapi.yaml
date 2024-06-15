@@ -35,6 +35,22 @@ paths:
         '200':
           description: OK
 
+  /items:
+    get:
+      summary: アイテムを取得
+      operationId: createItem
+      tags:
+        - items
+      responses:
+        '200':
+          description: 成功 - アイテム取得
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Item'
+        '404':
+          description: Not Found
+
   /items/{itemId}:
     get:
       summary: アイテムを取得
@@ -113,10 +129,10 @@ paths:
                     HP:
                       type: integer
                       description: ヒットポイント
-                    攻撃力:
+                    Attack:
                       type: integer
                       description: 攻撃力
-                    防御力:
+                    Defence:
                       type: integer
                       description: 防御力
       responses:
@@ -161,8 +177,7 @@ components:
           type: integer
           description: アイテムの属性 (1~6の整数)
         rarity:
-          type: number
-          format: float
+          type: integer
           description: 強さ度合い(レア度) (0~1の数字)
       required:
         - id

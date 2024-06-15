@@ -1,150 +1,48 @@
 package handler
 
 import (
+	"fmt"
+	"github.com/labstack/echo/v4"
+	openapi_types "github.com/oapi-codegen/runtime/types"
+	"github.com/pikachu0310/hackathon24spring02-data-server/internal/generate"
 	"github.com/pikachu0310/hackathon24spring02-data-server/internal/repository"
-	"github.com/pikachu0310/hackathon24spring02-data-server/openapi/models"
+	"net/http"
 )
 
 type Handler struct {
 	repo *repository.Repository
 }
 
-func (h *Handler) OauthCallback(ctx echo.Context, params models.OauthCallbackParams) error {
+func (h *Handler) CreateItem(ctx echo.Context) error {
+	item, err := generate.CreateItem()
+	if err != nil {
+		fmt.Println(err.Error())
+		return ctx.JSON(http.StatusInternalServerError, "Internal Server Error: "+err.Error())
+	}
+
+	return ctx.JSON(http.StatusOK, item)
+}
+
+func (h *Handler) GetItem(ctx echo.Context, itemId openapi_types.UUID) error {
 	//TODO implement me
 	panic("implement me")
 }
 
-func (h *Handler) Login(ctx echo.Context, params models.LoginParams) error {
+func (h *Handler) CombineItems(ctx echo.Context) error {
 	//TODO implement me
 	panic("implement me")
 }
 
-func (h *Handler) Logout(ctx echo.Context) error {
-	//TODO implement me
-	panic("implement me")
-}
-
-func (h *Handler) GetEvents(ctx echo.Context) error {
-	//TODO implement me
-	panic("implement me")
-}
-
-func (h *Handler) PostEvent(ctx echo.Context) error {
-	//TODO implement me
-	panic("implement me")
-}
-
-func (h *Handler) GetCurrentEvent(ctx echo.Context) error {
-	//TODO implement me
-	panic("implement me")
-}
-
-func (h *Handler) GetEvent(ctx echo.Context, eventSlug models.EventSlugInPath) error {
-	//TODO implement me
-	panic("implement me")
-}
-
-func (h *Handler) PatchEvent(ctx echo.Context, eventSlug models.EventSlugInPath) error {
-	//TODO implement me
-	panic("implement me")
-}
-
-func (h *Handler) GetEventCsv(ctx echo.Context, eventSlug models.EventSlugInPath) error {
-	//TODO implement me
-	panic("implement me")
-}
-
-func (h *Handler) GetEventGames(ctx echo.Context, eventSlug models.EventSlugInPath) error {
-	//TODO implement me
-	panic("implement me")
-}
-
-func (h *Handler) GetEventImage(ctx echo.Context, eventSlug models.EventSlugInPath) error {
-	//TODO implement me
-	panic("implement me")
-}
-
-func (h *Handler) GetEventTerms(ctx echo.Context, eventSlug models.EventSlugInPath) error {
-	//TODO implement me
-	panic("implement me")
-}
-
-func (h *Handler) GetGames(ctx echo.Context, params models.GetGamesParams) error {
-	//TODO implement me
-	panic("implement me")
-}
-
-func (h *Handler) PostGame(ctx echo.Context) error {
-	//TODO implement me
-	panic("implement me")
-}
-
-func (h *Handler) GetGame(ctx echo.Context, gameId models.GameIdInPath) error {
-	//TODO implement me
-	panic("implement me")
-}
-
-func (h *Handler) PatchGame(ctx echo.Context, gameId models.GameIdInPath) error {
-	//TODO implement me
-	panic("implement me")
-}
-
-func (h *Handler) GetGameIcon(ctx echo.Context, gameId models.GameIdInPath) error {
-	//TODO implement me
-	panic("implement me")
-}
-
-func (h *Handler) GetGameImage(ctx echo.Context, gameId models.GameIdInPath) error {
+func (h *Handler) GetItemWithParameters(ctx echo.Context) error {
 	//TODO implement me
 	panic("implement me")
 }
 
 func (h *Handler) PingServer(ctx echo.Context) error {
-	//TODO implement me
-	panic("implement me")
-}
-
-func (h *Handler) GetTerms(ctx echo.Context) error {
-	//TODO implement me
-	panic("implement me")
-}
-
-func (h *Handler) PostTerm(ctx echo.Context) error {
-	//TODO implement me
-	panic("implement me")
-}
-
-func (h *Handler) GetTerm(ctx echo.Context, termId models.TermIdInPath) error {
-	//TODO implement me
-	panic("implement me")
-}
-
-func (h *Handler) PatchTerm(ctx echo.Context, termId models.TermIdInPath) error {
-	//TODO implement me
-	panic("implement me")
-}
-
-func (h *Handler) GetTermGames(ctx echo.Context, termId models.TermIdInPath) error {
-	//TODO implement me
-	panic("implement me")
+	return ctx.JSON(http.StatusOK, "pong")
 }
 
 func (h *Handler) Test(ctx echo.Context) error {
-	//TODO implement me
-	panic("implement me")
-}
-
-func (h *Handler) GetMe(ctx echo.Context) error {
-	//TODO implement me
-	panic("implement me")
-}
-
-func (h *Handler) GetMeGames(ctx echo.Context) error {
-	//TODO implement me
-	panic("implement me")
-}
-
-func (h *Handler) GetUserGames(ctx echo.Context, userId models.UserIdInPath) error {
 	//TODO implement me
 	panic("implement me")
 }

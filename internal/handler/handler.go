@@ -6,19 +6,46 @@ import (
 	openapi_types "github.com/oapi-codegen/runtime/types"
 	"github.com/pikachu0310/hackathon24spring02-data-server/internal/generate"
 	"github.com/pikachu0310/hackathon24spring02-data-server/internal/repository"
+	"github.com/pikachu0310/hackathon24spring02-data-server/openapi/models"
 	"net/http"
+	"sync"
+	"time"
 )
 
 type Handler struct {
-	repo *repository.Repository
+	repo       *repository.Repository
+	stockMutex sync.Mutex
+	stock      []models.Item
 }
 
-func (h *Handler) CreateItem(ctx echo.Context) error {
-	item, err := generate.CreateItem()
-	if err != nil {
-		fmt.Println(err.Error())
-		return ctx.JSON(http.StatusInternalServerError, "Internal Server Error: "+err.Error())
+// stockItems maintains the stock of items
+func (h *Handler) StockItems() {
+	for {
+		h.stockMutex.Lock()
+		if len(h.stock) < 10 {
+			item, err := generate.CreateItem()
+			if err != nil {
+				fmt.Println("Error generating item:", err)
+			} else {
+				h.stock = append(h.stock, *item)
+			}
+		}
+		h.stockMutex.Unlock()
+		time.Sleep(1 * time.Second)
 	}
+}
+
+// CreateItem handles the item creation request
+func (h *Handler) CreateItem(ctx echo.Context) error {
+	h.stockMutex.Lock()
+	if len(h.stock) == 0 {
+		h.stockMutex.Unlock()
+		return ctx.JSON(http.StatusInternalServerError, "No items in stock")
+	}
+
+	item := h.stock[0]
+	h.stock = h.stock[1:]
+	h.stockMutex.Unlock()
 
 	return ctx.JSON(http.StatusOK, item)
 }

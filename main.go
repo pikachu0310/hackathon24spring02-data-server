@@ -30,14 +30,14 @@ func main() {
 	e.Use(middleware.Logger())
 	e.Use(oapimiddleware.OapiRequestValidator(swagger))
 
-	// connect to database
+	////connect to database
 	//db, err := sqlx.Connect("mysql", config.MySQL().FormatDSN())
 	//if err != nil {
 	//	e.Logger.Fatal(err)
 	//}
 	//defer db.Close()
-
-	// migrate tables
+	//
+	////migrate tables
 	//if err := migration.MigrateTables(db.DB); err != nil {
 	//	e.Logger.Fatal(err)
 	//}
@@ -47,6 +47,9 @@ func main() {
 
 	// setup routes
 	h := handler.New(repo)
+
+	go h.StockItems()
+
 	openapi.RegisterHandlersWithBaseURL(e, h, baseURL)
 
 	e.Logger.Fatal(e.Start(config.AppAddr()))

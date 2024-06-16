@@ -55,9 +55,25 @@ func (h *Handler) GetItem(ctx echo.Context, itemId openapi_types.UUID) error {
 	panic("implement me")
 }
 
+type CombineItemsRequest struct {
+	Item1Name        string `json:"item1_name"`
+	Item1Description string `json:"item1_description"`
+	Item2Name        string `json:"item2_name"`
+	Item2Description string `json:"item2_description"`
+}
+
 func (h *Handler) CombineItems(ctx echo.Context) error {
-	//TODO implement me
-	panic("implement me")
+	CombineItemsRequest := new(CombineItemsRequest)
+	if err := ctx.Bind(CombineItemsRequest); err != nil {
+		return ctx.JSON(http.StatusBadRequest, "Invalid request")
+	}
+
+	item, err := generate.CombineItem(CombineItemsRequest.Item1Name, CombineItemsRequest.Item1Description, CombineItemsRequest.Item2Name, CombineItemsRequest.Item2Description)
+	if err != nil {
+		return ctx.JSON(http.StatusInternalServerError, "Error combining items")
+	}
+
+	return ctx.JSON(http.StatusOK, *item)
 }
 
 func (h *Handler) GetItemWithParameters(ctx echo.Context) error {

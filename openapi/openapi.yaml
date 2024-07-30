@@ -14,6 +14,8 @@ servers:
 tags:
   - name: items
     description: アイテムAPI
+  - name: mech
+    description: 自機API
 paths:
   /ping:
     get:
@@ -106,55 +108,25 @@ paths:
         '404':
           description: Not Found
 
-  /items/parameters:
+  /mech/merge:
     post:
-      summary: アイテムとパラメーターを取得
-      operationId: getItemWithParameters
+      summary: アイテムを自機に合成
+      operationId: mergeItemToMech
       tags:
-        - items
+        - mech
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                itemId:
-                  type: string
-                  format: uuid
-                  description: アイテムID
-                parameters:
-                  type: object
-                  properties:
-                    HP:
-                      type: integer
-                      description: ヒットポイント
-                    Attack:
-                      type: integer
-                      description: 攻撃力
-                    Defence:
-                      type: integer
-                      description: 防御力
+              $ref: '#/components/schemas/MergeRequest'
       responses:
         '200':
-          description: 成功 - アイテムとパラメーター取得
+          description: 成功 - 合成後の自機パラメーター
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  parameters:
-                    type: object
-                    properties:
-                      HP:
-                        type: integer
-                        description: ヒットポイント
-                      攻撃力:
-                        type: integer
-                        description: 攻撃力
-                      防御力:
-                        type: integer
-                        description: 防御力
+                $ref: '#/components/schemas/Mech'
         '404':
           description: Not Found
 
@@ -185,3 +157,111 @@ components:
         - description
         - attribute
         - rarity
+
+    Mech:
+      type: object
+      properties:
+        defense:
+          type: number
+          description: プレイヤー防御力
+        health:
+          type: number
+          description: プレイヤーhp
+        maxHealth:
+          type: number
+          description: プレイヤー最大hp
+        downTime:
+          type: number
+          description: healthが0になった時に動けなくなる時間
+        hpRegenSpeed:
+          type: number
+          description: hpを1回復するのにかかる時間(ミリ秒)
+        mass:
+          type: number
+          description: プレイヤーの質量
+        bounciness:
+          type: number
+          description: プレイヤーの反発係数
+        friction:
+          type: number
+          description: プレイヤーの摩擦力
+        power:
+          type: number
+          description: プレイヤーの通常移動時の力の強さ
+        size:
+          type: number
+          description: プレイヤーの大きさ
+        dashCooldownTime:
+          type: number
+          description: プレイヤーのダッシュ操作のクールダウン時間
+        dashArrowFillRate:
+          type: number
+          description: プレイヤーの矢印のたまる時間の速さ
+        dashArrowMaxLength:
+          type: number
+          description: プレイヤーの矢印の最大の長さ
+        dashAccelerationDuration:
+          type: number
+          description: 突き操作の加速の時間の長さ
+        dashMaxForce:
+          type: number
+          description: 突きの最大の力
+        bulletAttack:
+          type: number
+          description: 弾の攻撃力
+        bulletNumber:
+          type: number
+          description: 一回のクリックで出す弾の数
+        bulletAngle:
+          type: number
+          description: 弾のぶれる範囲
+        bulletSpeed:
+          type: number
+          description: 弾の速さ
+        bulletAliveTime:
+          type: number
+          description: 弾の残る時間
+        bulletInterval:
+          type: number
+          description: 弾の射撃間隔
+        bulletSize:
+          type: number
+          description: 弾の大きさ
+        recoilForce:
+          type: number
+          description: 反動の大きさ
+      required:
+        - defense
+        - health
+        - maxHealth
+        - downTime
+        - hpRegenSpeed
+        - mass
+        - bounciness
+        - friction
+        - power
+        - size
+        - dashCooldownTime
+        - dashArrowFillRate
+        - dashArrowMaxLength
+        - dashAccelerationDuration
+        - dashMaxForce
+        - bulletAttack
+        - bulletNumber
+        - bulletAngle
+        - bulletSpeed
+        - bulletAliveTime
+        - bulletInterval
+        - bulletSize
+        - recoilForce
+
+    MergeRequest:
+      type: object
+      properties:
+        mech:
+          $ref: '#/components/schemas/Mech'
+        item:
+          $ref: '#/components/schemas/Item'
+      required:
+        - mech
+        - item

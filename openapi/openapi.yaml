@@ -88,16 +88,7 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                itemId1:
-                  type: string
-                  format: uuid
-                  description: 合成する最初のアイテムID
-                itemId2:
-                  type: string
-                  format: uuid
-                  description: 合成する二番目のアイテムID
+              $ref: '#/components/schemas/CombineItemsRequest'
       responses:
         '200':
           description: 成功 - 合成アイテム取得
@@ -265,3 +256,24 @@ components:
       required:
         - mech
         - item
+
+    CombineItemsRequest:
+      type: object
+      properties:
+        item1_name:
+          type: string
+          description: 合成する最初のアイテムの名前
+        item1_description:
+          type: string
+          description: 合成する最初のアイテムの説明文
+        item2_name:
+          type: string
+          description: 合成する二番目のアイテムの名前
+        item2_description:
+          type: string
+          description: 合成する二番目のアイテムの説明文
+      required:
+        - item1_name
+        - item1_description
+        - item2_name
+        - item2_description

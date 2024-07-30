@@ -7,6 +7,21 @@ import (
 	openapi_types "github.com/oapi-codegen/runtime/types"
 )
 
+// CombineItemsRequest defines model for CombineItemsRequest.
+type CombineItemsRequest struct {
+	// Item1Description 合成する最初のアイテムの説明文
+	Item1Description string `json:"item1_description"`
+
+	// Item1Name 合成する最初のアイテムの名前
+	Item1Name string `json:"item1_name"`
+
+	// Item2Description 合成する二番目のアイテムの説明文
+	Item2Description string `json:"item2_description"`
+
+	// Item2Name 合成する二番目のアイテムの名前
+	Item2Name string `json:"item2_name"`
+}
+
 // Item defines model for Item.
 type Item struct {
 	// Attribute アイテムの属性 (1~6の整数)
@@ -25,33 +40,86 @@ type Item struct {
 	Rarity int `json:"rarity"`
 }
 
-// CombineItemsJSONBody defines parameters for CombineItems.
-type CombineItemsJSONBody struct {
-	// ItemId1 合成する最初のアイテムID
-	ItemId1 *openapi_types.UUID `json:"itemId1,omitempty"`
+// Mech defines model for Mech.
+type Mech struct {
+	// Bounciness プレイヤーの反発係数
+	Bounciness float32 `json:"bounciness"`
 
-	// ItemId2 合成する二番目のアイテムID
-	ItemId2 *openapi_types.UUID `json:"itemId2,omitempty"`
+	// BulletAliveTime 弾の残る時間
+	BulletAliveTime float32 `json:"bulletAliveTime"`
+
+	// BulletAngle 弾のぶれる範囲
+	BulletAngle float32 `json:"bulletAngle"`
+
+	// BulletAttack 弾の攻撃力
+	BulletAttack float32 `json:"bulletAttack"`
+
+	// BulletInterval 弾の射撃間隔
+	BulletInterval float32 `json:"bulletInterval"`
+
+	// BulletNumber 一回のクリックで出す弾の数
+	BulletNumber float32 `json:"bulletNumber"`
+
+	// BulletSize 弾の大きさ
+	BulletSize float32 `json:"bulletSize"`
+
+	// BulletSpeed 弾の速さ
+	BulletSpeed float32 `json:"bulletSpeed"`
+
+	// DashAccelerationDuration 突き操作の加速の時間の長さ
+	DashAccelerationDuration float32 `json:"dashAccelerationDuration"`
+
+	// DashArrowFillRate プレイヤーの矢印のたまる時間の速さ
+	DashArrowFillRate float32 `json:"dashArrowFillRate"`
+
+	// DashArrowMaxLength プレイヤーの矢印の最大の長さ
+	DashArrowMaxLength float32 `json:"dashArrowMaxLength"`
+
+	// DashCooldownTime プレイヤーのダッシュ操作のクールダウン時間
+	DashCooldownTime float32 `json:"dashCooldownTime"`
+
+	// DashMaxForce 突きの最大の力
+	DashMaxForce float32 `json:"dashMaxForce"`
+
+	// Defense プレイヤー防御力
+	Defense float32 `json:"defense"`
+
+	// DownTime healthが0になった時に動けなくなる時間
+	DownTime float32 `json:"downTime"`
+
+	// Friction プレイヤーの摩擦力
+	Friction float32 `json:"friction"`
+
+	// Health プレイヤーhp
+	Health float32 `json:"health"`
+
+	// HpRegenSpeed hpを1回復するのにかかる時間(ミリ秒)
+	HpRegenSpeed float32 `json:"hpRegenSpeed"`
+
+	// Mass プレイヤーの質量
+	Mass float32 `json:"mass"`
+
+	// MaxHealth プレイヤー最大hp
+	MaxHealth float32 `json:"maxHealth"`
+
+	// Power プレイヤーの通常移動時の力の強さ
+	Power float32 `json:"power"`
+
+	// RecoilForce 反動の大きさ
+	RecoilForce float32 `json:"recoilForce"`
+
+	// Size プレイヤーの大きさ
+	Size float32 `json:"size"`
 }
 
-// GetItemWithParametersJSONBody defines parameters for GetItemWithParameters.
-type GetItemWithParametersJSONBody struct {
-	// ItemId アイテムID
-	ItemId     *openapi_types.UUID `json:"itemId,omitempty"`
-	Parameters *struct {
-		// Attack 攻撃力
-		Attack *int `json:"Attack,omitempty"`
-
-		// Defence 防御力
-		Defence *int `json:"Defence,omitempty"`
-
-		// HP ヒットポイント
-		HP *int `json:"HP,omitempty"`
-	} `json:"parameters,omitempty"`
+// MergeRequest defines model for MergeRequest.
+type MergeRequest struct {
+	Item Item `json:"item"`
+	Mech Mech `json:"mech"`
 }
 
 // CombineItemsJSONRequestBody defines body for CombineItems for application/json ContentType.
-type CombineItemsJSONRequestBody CombineItemsJSONBody
+type CombineItemsJSONRequestBody = CombineItemsRequest
 
-// GetItemWithParametersJSONRequestBody defines body for GetItemWithParameters for application/json ContentType.
-type GetItemWithParametersJSONRequestBody GetItemWithParametersJSONBody
+// MergeItemToMechJSONRequestBody defines body for MergeItemToMech for application/json ContentType.
+type MergeItemToMechJSONRequestBody = MergeRequest

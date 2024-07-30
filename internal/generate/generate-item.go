@@ -8,6 +8,7 @@ import (
 	"github.com/pikachu0310/hackathon24spring02-data-server/openapi/models"
 	"math/rand"
 	"regexp"
+	"strconv"
 )
 
 var createItemText1 = `
@@ -186,8 +187,8 @@ func CreateItem() (item *models.Item, err error) {
 func CombineItem(name, desc, name2, desc2 string) (itemAfter *models.Item, err error) {
 	messages := api.CreateNewMessages()
 	api.AddMessageAsUser(messages, combineText)
-	api.AddMessageAsUser(messages, name+desc)
-	api.AddMessageAsUser(messages, name2+desc2)
+	api.AddMessageAsUser(messages, "### アイテム1\nname: "+name+"\ndescription: "+desc+"\n")
+	api.AddMessageAsUser(messages, "### アイテム2\nname: "+name2+"\ndescription: "+desc2+"\n")
 	responseText, reason, err := api.RequestGPTAndGetResponseText(messages)
 	fmt.Println("****AI OUTPUT****\n" + responseText)
 	if err != nil || reason == api.ErrorHappen {
@@ -247,6 +248,194 @@ func parseItem(text string) (*models.Item, error) {
 	}
 
 	return createdItem, nil
+}
+
+// MergeItemToMech applies the item's effects to the mech and returns the updated mech.
+func MergeItemToMech(item *models.Item, mech *models.Mech) (*models.Mech, error) {
+	mergeText := createMergeText(item, mech)
+
+	messages := api.CreateNewMessages()
+	api.AddMessageAsUser(messages, mergeText)
+	responseText, reason, err := api.RequestGPTAndGetResponseText(messages)
+	if err != nil || reason == api.ErrorHappen {
+		return nil, err
+	} else if reason == api.Length {
+		return nil, errors.New("response too long")
+	}
+
+	updatedMech, err := parseMechResponse(responseText)
+	if err != nil {
+		return nil, err
+	}
+
+	return updatedMech, nil
+}
+
+// createMergeText generates the text to send to GPT for merging an item with a mech.
+func createMergeText(item *models.Item, mech *models.Mech) string {
+	return fmt.Sprintf(`
+僕は、AIを用いてアイテムを合成することができ、合成したアイテムを用いてオンラインで戦いあう、AI活用オンラインPvPゲームを作っています。
+あなたはこのゲームの核である、アイテム生成の判断をするAIの役を担ってもらいます。
+
+## ゲームの大きな特徴
+
+### アイテム合成
+プレイヤーは、マップに散らばっているアイテムを取得し、アイテムを自機に合成するか、アイテム同士を合成するかを選べます。自機に合成した場合、アイテムによって自分の様々なパラメーターが変化します。ただし、強くなるパラメーターがあれば、必ず弱くなるパラメーターもあります。つまり、メリットとデメリットが釣り合うようにアイテムの合成後のパラメーターを凄く考えなければなりません。AIであるあなたに、合成結果の自機のパラメーターを出力してもらいます。
+
+### 自機のパラメーター一覧
+以下に、プレイヤーの持つパラメーター一覧を示します。
+
+- 防御力: defense
+- HP: health
+- 最大HP: maxHealth
+- 動けなくなる時間: downTime
+- HP回復速度: hpRegenSpeed
+- 質量: mass
+- 反発係数: bounciness
+- 摩擦力: friction
+- 通常移動時の力: power
+- 大きさ: size
+- ダッシュ操作のクールダウン時間: dashCooldownTime
+- 矢印のたまる速度: dashArrowFillRate
+- 矢印の最大の長さ: dashArrowMaxLength
+- 加速の時間: dashAccelerationDuration
+- 突きの最大の力: dashMaxForce
+- 弾の攻撃力: bulletAttack
+- 弾の数: bulletNumber
+- 弾のぶれる範囲: bulletAngle
+- 弾の速さ: bulletSpeed
+- 弾の消滅時間: bulletAliveTime
+- 弾の連射速度: bulletInterval
+- 弾の大きさ: bulletSize
+- 反動の大きさ: recoilForce
+
+### 合成の詳細
+以下に、合成するアイテムと自機のパラメーターを示します。アイテムを合成した結果、自機のパラメーターがどのように変化するかを出力してください。
+
+#### アイテムの詳細
+- 名前: %s
+- 説明: %s
+
+#### 自機のパラメーター
+- 防御力: %.2f
+- HP: %.2f
+- 最大HP: %.2f
+- 動けなくなる時間: %.2f
+- HP回復速度: %.2f
+- 質量: %.2f
+- 反発係数: %.2f
+- 摩擦力: %.2f
+- 通常移動時の力: %.2f
+- 大きさ: %.2f
+- ダッシュ操作のクールダウン時間: %.2f
+- 矢印のたまる速度: %.2f
+- 矢印の最大の長さ: %.2f
+- 加速の時間: %.2f
+- 突きの最大の力: %.2f
+- 弾の攻撃力: %.2f
+- 弾の数: %.2f
+- 弾のぶれる範囲: %.2f
+- 弾の速さ: %.2f
+- 弾の消滅時間: %.2f
+- 弾の連射速度: %.2f
+- 弾の大きさ: %.2f
+- 反動の大きさ: %.2f
+
+出力のフォーマットは以下の通りです。
+defense: <value>
+health: <value>
+maxHealth: <value>
+downTime: <value>
+hpRegenSpeed: <value>
+mass: <value>
+bounciness: <value>
+friction: <value>
+power: <value>
+size: <value>
+dashCooldownTime: <value>
+dashArrowFillRate: <value>
+dashArrowMaxLength: <value>
+dashAccelerationDuration: <value>
+dashMaxForce: <value>
+bulletAttack: <value>
+bulletNumber: <value>
+bulletAngle: <value>
+bulletSpeed: <value>
+bulletAliveTime: <value>
+bulletInterval: <value>
+bulletSize: <value>
+recoilForce: <value>
+`,
+		item.Name,
+		item.Description,
+		mech.Defense,
+		mech.Health,
+		mech.MaxHealth,
+		mech.DownTime,
+		mech.HpRegenSpeed,
+		mech.Mass,
+		mech.Bounciness,
+		mech.Friction,
+		mech.Power,
+		mech.Size,
+		mech.DashCooldownTime,
+		mech.DashArrowFillRate,
+		mech.DashArrowMaxLength,
+		mech.DashAccelerationDuration,
+		mech.DashMaxForce,
+		mech.BulletAttack,
+		mech.BulletNumber,
+		mech.BulletAngle,
+		mech.BulletSpeed,
+		mech.BulletAliveTime,
+		mech.BulletInterval,
+		mech.BulletSize,
+		mech.RecoilForce,
+	)
+}
+
+// parseMechResponse parses the response text from GPT to extract the updated mech parameters.
+func parseMechResponse(responseText string) (*models.Mech, error) {
+	re := regexp.MustCompile(`defense:\s*(\d*\.?\d+)\s*health:\s*(\d*\.?\d+)\s*maxHealth:\s*(\d*\.?\d+)\s*downTime:\s*(\d*\.?\d+)\s*hpRegenSpeed:\s*(\d*\.?\d+)\s*mass:\s*(\d*\.?\d+)\s*bounciness:\s*(\d*\.?\d+)\s*friction:\s*(\d*\.?\d+)\s*power:\s*(\d*\.?\d+)\s*size:\s*(\d*\.?\d+)\s*dashCooldownTime:\s*(\d*\.?\d+)\s*dashArrowFillRate:\s*(\d*\.?\d+)\s*dashArrowMaxLength:\s*(\d*\.?\d+)\s*dashAccelerationDuration:\s*(\d*\.?\d+)\s*dashMaxForce:\s*(\d*\.?\d+)\s*bulletAttack:\s*(\d*\.?\d+)\s*bulletNumber:\s*(\d*\.?\d+)\s*bulletAngle:\s*(\d*\.?\d+)\s*bulletSpeed:\s*(\d*\.?\d+)\s*bulletAliveTime:\s*(\d*\.?\d+)\s*bulletInterval:\s*(\d*\.?\d+)\s*bulletSize:\s*(\d*\.?\d+)\s*recoilForce:\s*(\d*\.?\d+)`)
+
+	matches := re.FindStringSubmatch(responseText)
+	if matches == nil {
+		return nil, errors.New("failed to parse mech response")
+	}
+
+	updatedMech := &models.Mech{
+		Defense:                  parseFloat(matches[1]),
+		Health:                   parseFloat(matches[2]),
+		MaxHealth:                parseFloat(matches[3]),
+		DownTime:                 parseFloat(matches[4]),
+		HpRegenSpeed:             parseFloat(matches[5]),
+		Mass:                     parseFloat(matches[6]),
+		Bounciness:               parseFloat(matches[7]),
+		Friction:                 parseFloat(matches[8]),
+		Power:                    parseFloat(matches[9]),
+		Size:                     parseFloat(matches[10]),
+		DashCooldownTime:         parseFloat(matches[11]),
+		DashArrowFillRate:        parseFloat(matches[12]),
+		DashArrowMaxLength:       parseFloat(matches[13]),
+		DashAccelerationDuration: parseFloat(matches[14]),
+		DashMaxForce:             parseFloat(matches[15]),
+		BulletAttack:             parseFloat(matches[16]),
+		BulletNumber:             parseFloat(matches[17]),
+		BulletAngle:              parseFloat(matches[18]),
+		BulletSpeed:              parseFloat(matches[19]),
+		BulletAliveTime:          parseFloat(matches[20]),
+		BulletInterval:           parseFloat(matches[21]),
+		BulletSize:               parseFloat(matches[22]),
+		RecoilForce:              parseFloat(matches[23]),
+	}
+
+	return updatedMech, nil
+}
+
+// parseFloat converts a string to a float64.
+func parseFloat(value string) float32 {
+	floatValue, _ := strconv.ParseFloat(value, 32)
+	return float32(floatValue)
 }
 
 //func GptGenerateItem() ([]*Item, error) {

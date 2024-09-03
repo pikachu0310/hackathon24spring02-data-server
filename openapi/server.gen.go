@@ -17,7 +17,6 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/oapi-codegen/runtime"
 	openapi_types "github.com/oapi-codegen/runtime/types"
-	. "github.com/pikachu0310/hackathon24spring02-data-server/openapi/models"
 )
 
 // ServerInterface represents all server handlers.

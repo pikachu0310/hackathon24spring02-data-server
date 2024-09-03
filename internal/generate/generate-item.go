@@ -397,41 +397,158 @@ recoilForce: <value>
 }
 
 // parseMechResponse parses the response text from GPT to extract the updated mech parameters.
-func parseMechResponse(responseText string) (*models.Mech, error) {
-	re := regexp.MustCompile(`defense:\s*(\d*\.?\d+)\s*health:\s*(\d*\.?\d+)\s*maxHealth:\s*(\d*\.?\d+)\s*downTime:\s*(\d*\.?\d+)\s*hpRegenSpeed:\s*(\d*\.?\d+)\s*mass:\s*(\d*\.?\d+)\s*bounciness:\s*(\d*\.?\d+)\s*friction:\s*(\d*\.?\d+)\s*power:\s*(\d*\.?\d+)\s*size:\s*(\d*\.?\d+)\s*dashCooldownTime:\s*(\d*\.?\d+)\s*dashArrowFillRate:\s*(\d*\.?\d+)\s*dashArrowMaxLength:\s*(\d*\.?\d+)\s*dashAccelerationDuration:\s*(\d*\.?\d+)\s*dashMaxForce:\s*(\d*\.?\d+)\s*bulletAttack:\s*(\d*\.?\d+)\s*bulletNumber:\s*(\d*\.?\d+)\s*bulletAngle:\s*(\d*\.?\d+)\s*bulletSpeed:\s*(\d*\.?\d+)\s*bulletAliveTime:\s*(\d*\.?\d+)\s*bulletInterval:\s*(\d*\.?\d+)\s*bulletSize:\s*(\d*\.?\d+)\s*recoilForce:\s*(\d*\.?\d+)`)
+func parseMechResponse(responseText string, defaultMech *models.Mech) (*models.Mech, error) {
+	// 正規表現パターン
+	re := regexp.MustCompile(`(?m)(\w+):\s*([\d\.]+)`)
 
-	matches := re.FindStringSubmatch(responseText)
+	// パターンにマッチするすべてのペアを抽出
+	matches := re.FindAllStringSubmatch(responseText, -1)
+
 	if matches == nil {
 		return nil, errors.New("failed to parse mech response: " + responseText)
 	}
 
+	// Mechオブジェクトを初期化
 	updatedMech := &models.Mech{
-		Defense:                  parseFloat(matches[1]),
-		Health:                   parseFloat(matches[2]),
-		MaxHealth:                parseFloat(matches[3]),
-		DownTime:                 parseFloat(matches[4]),
-		HpRegenSpeed:             parseFloat(matches[5]),
-		Mass:                     parseFloat(matches[6]),
-		Bounciness:               parseFloat(matches[7]),
-		Friction:                 parseFloat(matches[8]),
-		Power:                    parseFloat(matches[9]),
-		Size:                     parseFloat(matches[10]),
-		DashCooldownTime:         parseFloat(matches[11]),
-		DashArrowFillRate:        parseFloat(matches[12]),
-		DashArrowMaxLength:       parseFloat(matches[13]),
-		DashAccelerationDuration: parseFloat(matches[14]),
-		DashMaxForce:             parseFloat(matches[15]),
-		BulletAttack:             parseFloat(matches[16]),
-		BulletNumber:             parseFloat(matches[17]),
-		BulletAngle:              parseFloat(matches[18]),
-		BulletSpeed:              parseFloat(matches[19]),
-		BulletAliveTime:          parseFloat(matches[20]),
-		BulletInterval:           parseFloat(matches[21]),
-		BulletSize:               parseFloat(matches[22]),
-		RecoilForce:              parseFloat(matches[23]),
+		Defense:                  defaultMech.Defense,
+		Health:                   defaultMech.Health,
+		MaxHealth:                defaultMech.MaxHealth,
+		DownTime:                 defaultMech.DownTime,
+		HpRegenSpeed:             defaultMech.HpRegenSpeed,
+		Mass:                     defaultMech.Mass,
+		Bounciness:               defaultMech.Bounciness,
+		Friction:                 defaultMech.Friction,
+		Power:                    defaultMech.Power,
+		Size:                     defaultMech.Size,
+		DashCooldownTime:         defaultMech.DashCooldownTime,
+		DashArrowFillRate:        defaultMech.DashArrowFillRate,
+		DashArrowMaxLength:       defaultMech.DashArrowMaxLength,
+		DashAccelerationDuration: defaultMech.DashAccelerationDuration,
+		DashMaxForce:             defaultMech.DashMaxForce,
+		BulletAttack:             defaultMech.BulletAttack,
+		BulletNumber:             defaultMech.BulletNumber,
+		BulletAngle:              defaultMech.BulletAngle,
+		BulletSpeed:              defaultMech.BulletSpeed,
+		BulletAliveTime:          defaultMech.BulletAliveTime,
+		BulletInterval:           defaultMech.BulletInterval,
+		BulletSize:               defaultMech.BulletSize,
+		RecoilForce:              defaultMech.RecoilForce,
+	}
+
+	// 抽出されたフィールドと値を対応付け
+	for _, match := range matches {
+		key := match[1]
+		value, err := strconv.ParseFloat(match[2], 32)
+		if err != nil {
+			fmt.Println("Failed to parse float: "+key, match[2])
+			value = float64(getDefaultMechValue(key, defaultMech))
+		}
+
+		switch key {
+		case "defense":
+			updatedMech.Defense = float32(value)
+		case "health":
+			updatedMech.Health = float32(value)
+		case "maxHealth":
+			updatedMech.MaxHealth = float32(value)
+		case "downTime":
+			updatedMech.DownTime = float32(value)
+		case "hpRegenSpeed":
+			updatedMech.HpRegenSpeed = float32(value)
+		case "mass":
+			updatedMech.Mass = float32(value)
+		case "bounciness":
+			updatedMech.Bounciness = float32(value)
+		case "friction":
+			updatedMech.Friction = float32(value)
+		case "power":
+			updatedMech.Power = float32(value)
+		case "size":
+			updatedMech.Size = float32(value)
+		case "dashCooldownTime":
+			updatedMech.DashCooldownTime = float32(value)
+		case "dashArrowFillRate":
+			updatedMech.DashArrowFillRate = float32(value)
+		case "dashArrowMaxLength":
+			updatedMech.DashArrowMaxLength = float32(value)
+		case "dashAccelerationDuration":
+			updatedMech.DashAccelerationDuration = float32(value)
+		case "dashMaxForce":
+			updatedMech.DashMaxForce = float32(value)
+		case "bulletAttack":
+			updatedMech.BulletAttack = float32(value)
+		case "bulletNumber":
+			updatedMech.BulletNumber = float32(value)
+		case "bulletAngle":
+			updatedMech.BulletAngle = float32(value)
+		case "bulletSpeed":
+			updatedMech.BulletSpeed = float32(value)
+		case "bulletAliveTime":
+			updatedMech.BulletAliveTime = float32(value)
+		case "bulletInterval":
+			updatedMech.BulletInterval = float32(value)
+		case "bulletSize":
+			updatedMech.BulletSize = float32(value)
+		case "recoilForce":
+			updatedMech.RecoilForce = float32(value)
+		}
 	}
 
 	return updatedMech, nil
+}
+
+// デフォルトのMech値を取得する関数
+func getDefaultMechValue(key string, defaultMech *models.Mech) float32 {
+	switch key {
+	case "defense":
+		return defaultMech.Defense
+	case "health":
+		return defaultMech.Health
+	case "maxHealth":
+		return defaultMech.MaxHealth
+	case "downTime":
+		return defaultMech.DownTime
+	case "hpRegenSpeed":
+		return defaultMech.HpRegenSpeed
+	case "mass":
+		return defaultMech.Mass
+	case "bounciness":
+		return defaultMech.Bounciness
+	case "friction":
+		return defaultMech.Friction
+	case "power":
+		return defaultMech.Power
+	case "size":
+		return defaultMech.Size
+	case "dashCooldownTime":
+		return defaultMech.DashCooldownTime
+	case "dashArrowFillRate":
+		return defaultMech.DashArrowFillRate
+	case "dashArrowMaxLength":
+		return defaultMech.DashArrowMaxLength
+	case "dashAccelerationDuration":
+		return defaultMech.DashAccelerationDuration
+	case "dashMaxForce":
+		return defaultMech.DashMaxForce
+	case "bulletAttack":
+		return defaultMech.BulletAttack
+	case "bulletNumber":
+		return defaultMech.BulletNumber
+	case "bulletAngle":
+		return defaultMech.BulletAngle
+	case "bulletSpeed":
+		return defaultMech.BulletSpeed
+	case "bulletAliveTime":
+		return defaultMech.BulletAliveTime
+	case "bulletInterval":
+		return defaultMech.BulletInterval
+	case "bulletSize":
+		return defaultMech.BulletSize
+	case "recoilForce":
+		return defaultMech.RecoilForce
+	default:
+		return 0.0
+	}
 }
 
 // parseFloat converts a string to a float64.

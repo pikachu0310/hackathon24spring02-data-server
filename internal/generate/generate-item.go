@@ -342,7 +342,8 @@ func createMergeText(item *models.Item, mech *models.Mech) string {
 - 弾の大きさ: %.2f
 - 反動の大きさ: %.2f
 
-出力のフォーマットは以下の通りです。
+この二つの情報を用いて、合成後の自機のパラメーターを考えて、結果だけ出力してください。出力する際は必ず以下のフォーマットに従い、これ以外は出力しないでください。出力のフォーマットは以下の通りです。
+
 defense: <value>
 health: <value>
 maxHealth: <value>

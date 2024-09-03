@@ -69,7 +69,7 @@ func (h *Handler) CombineItems(ctx echo.Context) error {
 
 	item, err := generate.CombineItem(combineItemsRequest.Item1Name, combineItemsRequest.Item1Description, combineItemsRequest.Item2Name, combineItemsRequest.Item2Description)
 	if err != nil {
-		return ctx.JSON(http.StatusInternalServerError, "Error combining items")
+		return ctx.JSON(http.StatusInternalServerError, "Error combining items: "+err.Error())
 	}
 
 	return ctx.JSON(http.StatusOK, *item)
@@ -87,12 +87,12 @@ func (h *Handler) Test(ctx echo.Context) error {
 func (h *Handler) MergeItemToMech(ctx echo.Context) error {
 	mergeRequest := new(models.MergeRequest)
 	if err := ctx.Bind(mergeRequest); err != nil {
-		return ctx.JSON(http.StatusBadRequest, "Invalid request")
+		return ctx.JSON(http.StatusBadRequest, "Invalid request: "+err.Error())
 	}
 
 	mech, err := generate.MergeItemToMech(&mergeRequest.Item, &mergeRequest.Mech)
 	if err != nil {
-		return ctx.JSON(http.StatusInternalServerError, "Error merging item to mech")
+		return ctx.JSON(http.StatusInternalServerError, "Error merging item to mech: "+err.Error())
 	}
 
 	return ctx.JSON(http.StatusOK, *mech)

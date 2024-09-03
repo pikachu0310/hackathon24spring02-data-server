@@ -172,7 +172,7 @@ func CreateItem() (item *models.Item, err error) {
 	messages := api.CreateNewMessages()
 	api.AddMessageAsUser(messages, createItemText1)
 	responseText, reason, err := api.RequestGPTAndGetResponseText(messages)
-	fmt.Println("****AI OUTPUT****\n" + responseText)
+	fmt.Println("****AI OUTPUT(CREATE)****\n" + responseText)
 	if err != nil || reason == api.ErrorHappen {
 		fmt.Println("GPT ERROR:" + err.Error())
 		return nil, err
@@ -190,7 +190,7 @@ func CombineItem(name, desc, name2, desc2 string) (itemAfter *models.Item, err e
 	api.AddMessageAsUser(messages, "### アイテム1\nname: "+name+"\ndescription: "+desc+"\n")
 	api.AddMessageAsUser(messages, "### アイテム2\nname: "+name2+"\ndescription: "+desc2+"\n")
 	responseText, reason, err := api.RequestGPTAndGetResponseText(messages)
-	fmt.Println("****AI OUTPUT****\n" + responseText)
+	fmt.Println("****AI OUTPUT (COMBINE)****\n" + responseText)
 	if err != nil || reason == api.ErrorHappen {
 		fmt.Println("GPT ERROR:" + err.Error())
 		return nil, err
@@ -257,6 +257,7 @@ func MergeItemToMech(item *models.Item, mech *models.Mech) (*models.Mech, error)
 	messages := api.CreateNewMessages()
 	api.AddMessageAsUser(messages, mergeText)
 	responseText, reason, err := api.RequestGPTAndGetResponseText(messages)
+	fmt.Println("****AI OUTPUT (MERGE)****\n" + responseText)
 	if err != nil || reason == api.ErrorHappen {
 		return nil, err
 	} else if reason == api.Length {
@@ -400,7 +401,7 @@ func parseMechResponse(responseText string) (*models.Mech, error) {
 
 	matches := re.FindStringSubmatch(responseText)
 	if matches == nil {
-		return nil, errors.New("failed to parse mech response")
+		return nil, errors.New("failed to parse mech response: " + responseText)
 	}
 
 	updatedMech := &models.Mech{

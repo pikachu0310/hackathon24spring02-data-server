@@ -264,7 +264,7 @@ func MergeItemToMech(item *models.Item, mech *models.Mech) (*models.Mech, error)
 		return nil, errors.New("response too long")
 	}
 
-	updatedMech, err := parseMechResponse(responseText)
+	updatedMech, err := parseMechResponse(responseText, mech)
 	if err != nil {
 		return nil, err
 	}

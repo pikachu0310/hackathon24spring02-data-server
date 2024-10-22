@@ -42,7 +42,7 @@ func RequestGPTAndGetResponseText(messages *Messages) (responseText string, fini
 	c := openai.NewClient(apiKey)
 	ctx := context.Background()
 
-	model := openai.GPT4
+	model := openai.GPT4oMini
 
 	req := openai.ChatCompletionRequest{
 		Model:    model,
